@@ -1,0 +1,5 @@
+DROP DATABASE IF EXISTS HRsystem;
+
+CREATE DATABASE HRsystem;
+
+USE HRsystem;

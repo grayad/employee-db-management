@@ -1,4 +1,26 @@
+// modules
 const inquirer = require('inquirer');
+const cTable = require('console.table');
+const mysql = require('mysql2');
+
+// Connect to database
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      // Your MySQL username,
+      user: 'root',
+      // Your MySQL password
+      password: '',
+      database: 'HRsystem'
+    },
+    console.log('Connected to the election database.')
+);
+
+console.log('=================================')
+console.log('Welcome to the Employee Database.')
+console.log('=================================')
+
+
 var deptArray = ["testDept", "test2", "test3"];
 const initialQ = [
     {
@@ -83,11 +105,24 @@ const empUpdateQ = [
 const promptUser = () => {
     inquirer.prompt(initialQ).then(answer => {
         switch (answer.request){
+            // View Depts
+            case "View All Departments":
+                viewAllDepts();
+            break;
+
+            // View Roles
+            case "View All Roles":
+                viewAllRoles();
+            break;
+
+            // View Emps
+            case "View All Employees":
+                viewAllEmployees();
+            break;
+
             // Add Dept
             case "Add a Department":
-                inquirer.prompt(deptQ).then(dept => {
-                    deptArray.push(dept);
-                });
+                inquirer.prompt(deptQ)
             break;
 
             // Add a role
@@ -109,3 +144,40 @@ const promptUser = () => {
 };
 
 promptUser();
+
+
+function viewAllEmployees() {
+    const sql = `SELECT * FROM employees`;
+
+    db.query(sql, (err, rows) => {
+        if(err) {
+            console.log('DATABASE ERROR');
+            return;
+        }
+        console.table(rows);
+    })
+};
+
+function viewAllDepts() {
+    const sql = `SELECT dept FROM departments`;
+
+    db.query(sql, (err, rows) => {
+        if(err) {
+            console.log('DATABASE ERROR');
+            return;
+        }
+        console.table(rows);
+    })
+};
+
+function viewAllRoles() {
+    const sql = `SELECT job_title, dept, salary FROM roles`;
+
+    db.query(sql, (err, rows) => {
+        if(err) {
+            console.log('DATABASE ERROR');
+            return;
+        }
+        console.table(rows);
+    })
+};
