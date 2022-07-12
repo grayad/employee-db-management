@@ -1,6 +1,6 @@
 // modules
 const inquirer = require('inquirer');
-const cTable = require('console.table');
+require('console.table');
 const mysql = require('mysql2');
 
 // Connect to database
@@ -180,34 +180,35 @@ function viewAllDepts() {
 };
 
 function viewAllRoles() {
-    const sql = `SELECT job_title, dept, salary FROM roles`;
+    const sql = `SELECT * FROM roles`;
 
     db.query(sql, (err, rows) => {
         if(err) {
             console.log('DATABASE ERROR');
             return;
         }
+        console.table(rows);
     });
 }
 
-function addDept() {
-    inquirer.prompt(deptQ).then(answer => {
-        const sql = `INSERT INTO departments (dept)
-        VALUES (?)`;
+// function addDept() {
+//     inquirer.prompt(deptQ).then(answer => {
+//         const sql = `INSERT INTO departments (dept)
+//         VALUES (?)`;
 
-        db.query(sql, answer.dept, (err, rows) => {
-            if(err) {
-                console.log('DATABASE ERROR');
-                return;
-            }
-            console.log('Added' + answer.dept + 'to the database.');
-        });
-    });
-};
+//         db.query(sql, answer.dept, (err, rows) => {
+//             if(err) {
+//                 console.log('DATABASE ERROR');
+//                 return;
+//             }
+//             console.log('Added' + answer.dept + 'to the database.');
+//         });
+//     });
+// };
 
-function addRole() {
-    db.query(`SELECT dept FROM departments`, (err, rows)){
-        console.log(rows)
+// function addRole() {
+//     db.query(`SELECT dept FROM departments`, (err, rows)){
+//         console.log(rows)
         // const deptChoices = rows;
 
 
@@ -225,5 +226,5 @@ function addRole() {
         //         console.log('Added' + answer.dept + 'to the database.');
         //     });
         // });
-    }
-};
+//     }
+// };
