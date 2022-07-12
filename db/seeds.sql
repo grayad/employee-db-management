@@ -1,21 +1,24 @@
-INSERT INTO employees (first_name, last_name, job_title, dept, salary, manager)
-VALUES
-  ('Alexandra', 'Summers', 'IT Manager', 'IT', 100000, NULL),
-  ('Jay', 'Winston', 'Business Analyst', 'IT', 70000, "Alexandra Summers"),
-  ('Arya', 'Cruz', 'Business Analyst', 'IT', 70000, "Alexandra Summers"),
-  ('Kamal', 'Price', 'PMO Manager', 'EPMO', 110000, NULL),
-  ('Derrick', 'Campbell', 'Project Manager', 'EPMO', 82000, "Kamal Price");
-
-
-INSERT INTO roles (job_title, dept, salary)
-VALUES
-    ('IT Manager', 'IT', 100000),
-    ('Business Analyst', 'IT', 70000),
-    ('PMO Manager', 'EPMO', 110000),
-    ('Project Manager', 'EPMO', 82000);
-
-
 INSERT INTO departments (dept)
 VALUES
     ('IT'),
     ('EPMO');
+
+INSERT INTO roles (job_title, salary, dept_id)
+VALUES
+    ('IT Manager', 100000, 1),
+    ('Business Analyst', 70000, 1),
+    ('PMO Manager', 110000, 2),
+    ('Project Manager', 82000, 2);
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES
+  ('Alexandra', 'Summers', 1, NULL),
+  ('Jay', 'Winston', 2, 1),
+  ('Arya', 'Cruz', 2, 1),
+  ('Kamal', 'Price', 3,  NULL),
+  ('Derrick', 'Campbell', 4, 4);
+
+
+
+
+

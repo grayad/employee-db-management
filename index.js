@@ -20,8 +20,6 @@ console.log('=================================')
 console.log('Welcome to the Employee Database.')
 console.log('=================================')
 
-
-var deptArray = ["testDept", "test2", "test3"];
 const initialQ = [
     {
         type: "list",
@@ -34,7 +32,8 @@ const initialQ = [
             "Add a Department",
             "Add a Role",
             "Add an Employee",
-            "Update an Employee Role"
+            "Update an Employee Role",
+            "Quit"
         ]
     }
 ];
@@ -47,24 +46,26 @@ const deptQ = [
     }
 ];
 
-const roleQ = [
-    {
-        type: "input",
-        name: "role",
-        message: "What is the job title?"
-    },
-    {
-        type: "list",
-        name: "roleDept",
-        message: "What department does this role belong to?",
-        choices: deptArray
-    },
-    {
-        type: "input",
-        name: "salary",
-        message: "What is the salary for this role?"
-    }
-];
+const roleQ = (deptChoices) => {
+    [
+        {
+            type: "input",
+            name: "role",
+            message: "What is the job title?"
+        },
+        {
+            type: "list",
+            name: "roleDept",
+            message: "What department does this role belong to?",
+            choices: deptChoices
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "What is the salary for this role?"
+        }
+    ];
+};
 
 const empQ = [
     {
@@ -87,7 +88,10 @@ const empQ = [
         name: "empManager",
         message: "Who is the employee's manager?"
     }
-];
+]
+
+
+
 
 const empUpdateQ = [
     {
@@ -122,7 +126,7 @@ const promptUser = () => {
 
             // Add Dept
             case "Add a Department":
-                inquirer.prompt(deptQ)
+                addDept();
             break;
 
             // Add a role
@@ -139,6 +143,11 @@ const promptUser = () => {
             case "Update an Employee Role":
                 inquirer.prompt(empUpdateQ)
             break;
+
+            // Exit the application
+            case "Quit":
+                console.log("Goodbye!");
+                process.exit();
         }
     });
 };
@@ -155,7 +164,7 @@ function viewAllEmployees() {
             return;
         }
         console.table(rows);
-    })
+    });
 };
 
 function viewAllDepts() {
@@ -167,7 +176,7 @@ function viewAllDepts() {
             return;
         }
         console.table(rows);
-    })
+    });
 };
 
 function viewAllRoles() {
@@ -178,6 +187,43 @@ function viewAllRoles() {
             console.log('DATABASE ERROR');
             return;
         }
-        console.table(rows);
-    })
+    });
+}
+
+function addDept() {
+    inquirer.prompt(deptQ).then(answer => {
+        const sql = `INSERT INTO departments (dept)
+        VALUES (?)`;
+
+        db.query(sql, answer.dept, (err, rows) => {
+            if(err) {
+                console.log('DATABASE ERROR');
+                return;
+            }
+            console.log('Added' + answer.dept + 'to the database.');
+        });
+    });
+};
+
+function addRole() {
+    db.query(`SELECT dept FROM departments`, (err, rows)){
+        console.log(rows)
+        // const deptChoices = rows;
+
+
+        // const newRoleQ = roleQ(deptChoices);
+
+        // inquirer.prompt(deptQ).then(answer => {
+        //     const sql = `INSERT INTO departments (dept)
+        //     VALUES (?)`;
+
+        //     db.query(sql, answer.dept, (err, rows) => {
+        //         if(err) {
+        //             console.log('DATABASE ERROR');
+        //             return;
+        //         }
+        //         console.log('Added' + answer.dept + 'to the database.');
+        //     });
+        // });
+    }
 };
