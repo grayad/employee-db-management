@@ -46,7 +46,9 @@ const deptQ = [
     }
 ];
 
+
 const roleQ = (deptChoices) => {
+    console.log(deptChoices);
     [
         {
             type: "input",
@@ -67,31 +69,30 @@ const roleQ = (deptChoices) => {
     ];
 };
 
-const empQ = [
-    {
-        type: "input",
-        name: "firstName",
-        message: "What is the employee's first name?"
-    },
-    {
-        type: "input",
-        name: "lastName",
-        message: "What is the employee's last name?"
-    },
-    {
-        type: "input",
-        name: "empRole",
-        message: "What is the employee's role?"
-    },
-    {
-        type: "input",
-        name: "empManager",
-        message: "Who is the employee's manager?"
-    }
-]
-
-
-
+const empQ = (roleChoices) => {
+    [
+        {
+            type: "input",
+            name: "firstName",
+            message: "What is the employee's first name?"
+        },
+        {
+            type: "input",
+            name: "lastName",
+            message: "What is the employee's last name?"
+        },
+        {
+            type: "input",
+            name: "empRole",
+            message: "What is the employee's role?"
+        },
+        {
+            type: "input",
+            name: "empManager",
+            message: "Who is the employee's manager?"
+        }
+    ]
+};
 
 const empUpdateQ = [
     {
@@ -131,12 +132,12 @@ const promptUser = () => {
 
             // Add a role
             case "Add a Role":
-                inquirer.prompt(roleQ)
+                addRole();
             break;
 
             // Add an Employee
             case "Add an Employee":
-                inquirer.prompt(empQ)
+                addEmp();
             break;
 
             // Update an Employee
@@ -191,40 +192,67 @@ function viewAllRoles() {
     });
 }
 
-// function addDept() {
-//     inquirer.prompt(deptQ).then(answer => {
-//         const sql = `INSERT INTO departments (dept)
-//         VALUES (?)`;
+function addDept() {
+    inquirer.prompt(deptQ).then(answer => {
+        const sql = `INSERT INTO departments (dept)
+        VALUES (?)`;
 
-//         db.query(sql, answer.dept, (err, rows) => {
-//             if(err) {
-//                 console.log('DATABASE ERROR');
-//                 return;
-//             }
-//             console.log('Added' + answer.dept + 'to the database.');
+        db.query(sql, answer.dept, (err, rows) => {
+            if(err) {
+                console.log('DATABASE ERROR');
+                return;
+            }
+            console.log('Added ' + answer.dept + ' to the database.');
+        });
+    });
+};
+
+function addRole() {
+    const deptArr = [];
+    db.query(`SELECT dept FROM departments`, (err, rows) => {
+        rows.map((dept) => deptArr.push(dept.dept));
+        console.log(deptArr);
+        return deptArr;
+    })
+
+    console.log(deptArr);
+    inquirer.prompt(roleQ(deptArr))
+}
+//     (({job_title, salary, dept_id}) => {
+//             const sql = `INSERT INTO roles (job_title, salary, dept_id)
+//             VALUES (?,?,?)`;
+//             const params = [answers.job_title, answers.salary, answers.dept_id]
+
+//             db.query(sql, params, (err, rows) => {
+//                 if(err) {
+//                     console.log('DATABASE ERROR');
+//                     return;
+//                 }
+//                 console.log('Added ' + answer.job_title + ' to the database.');
+//             });
 //         });
-//     });
-// };
-
-// function addRole() {
-//     db.query(`SELECT dept FROM departments`, (err, rows)){
-//         console.log(rows)
-        // const deptChoices = rows;
-
-
-        // const newRoleQ = roleQ(deptChoices);
-
-        // inquirer.prompt(deptQ).then(answer => {
-        //     const sql = `INSERT INTO departments (dept)
-        //     VALUES (?)`;
-
-        //     db.query(sql, answer.dept, (err, rows) => {
-        //         if(err) {
-        //             console.log('DATABASE ERROR');
-        //             return;
-        //         }
-        //         console.log('Added' + answer.dept + 'to the database.');
-        //     });
-        // });
 //     }
+
+// function addEmp() {
+//     db.query(`SELECT job_title FROM roles`, (err, rows) => {
+//         const roleChoices = rows.map(({ job_title }) => job_title);
+//         console.log(roleChoices);
+
+//         const newQ = empQ(roleChoices);
+
+//         inquirer.prompt(newQ)
+//         // .then(({first_name, last_name, role_id, manager_id}) => {
+//         //     const sql = `INSERT INTO roles (first_name, last_name, role_id, manager_id)
+//         //     VALUES (?,?,?,?)`;
+//         //     const params = [first_name, last_name, role_id, manager_id]
+
+//         //     db.query(sql, params, (err, rows) => {
+//         //         if(err) {
+//         //             console.log('DATABASE ERROR');
+//         //             return;
+//         //         }
+//         //         console.log('Added ' + first_name + ' ' +last_name + ' to the database.');
+//         //     });
+//         // });
+//     });
 // };
