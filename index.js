@@ -46,29 +46,6 @@ const deptQ = [
     }
 ];
 
-
-const roleQ = (deptChoices) => {
-    console.log(deptChoices);
-    [
-        {
-            type: "input",
-            name: "role",
-            message: "What is the job title?"
-        },
-        {
-            type: "list",
-            name: "roleDept",
-            message: "What department does this role belong to?",
-            choices: deptChoices
-        },
-        {
-            type: "input",
-            name: "salary",
-            message: "What is the salary for this role?"
-        }
-    ];
-};
-
 const empQ = (roleChoices) => {
     [
         {
@@ -108,48 +85,51 @@ const empUpdateQ = [
 ]
 
 const promptUser = () => {
-    inquirer.prompt(initialQ).then(answer => {
-        switch (answer.request){
-            // View Depts
-            case "View All Departments":
-                viewAllDepts();
-            break;
+    return new Promise((resolve, rej) => {
 
-            // View Roles
-            case "View All Roles":
-                viewAllRoles();
-            break;
+        inquirer.prompt(initialQ).then((answer) => {
+            switch (answer.request){
+                // View Depts
+                case "View All Departments":
+                    viewAllDepts();
+                    break;
 
-            // View Emps
-            case "View All Employees":
-                viewAllEmployees();
-            break;
+                // View Roles
+                case "View All Roles":
+                    viewAllRoles();
+                    break;
 
-            // Add Dept
-            case "Add a Department":
-                addDept();
-            break;
+                // View Emps
+                case "View All Employees":
+                    viewAllEmployees();
+                    break;
 
-            // Add a role
-            case "Add a Role":
-                addRole();
-            break;
+                // Add Dept
+                case "Add a Department":
+                    addDept();
+                    break;
 
-            // Add an Employee
-            case "Add an Employee":
-                addEmp();
-            break;
+                // Add a role
+                case "Add a Role":
+                    addRole();
+                    break;
 
-            // Update an Employee
-            case "Update an Employee Role":
-                inquirer.prompt(empUpdateQ)
-            break;
+                // Add an Employee
+                case "Add an Employee":
+                    addEmp();
+                    break;
 
-            // Exit the application
-            case "Quit":
-                console.log("Goodbye!");
-                process.exit();
-        }
+                // Update an Employee
+                case "Update an Employee Role":
+                    inquirer.prompt(empUpdateQ)
+                    break;
+
+                // Exit the application
+                case "Quit":
+                    console.log("Goodbye!");
+                    process.exit();
+            }
+        });
     });
 };
 
@@ -181,7 +161,8 @@ function viewAllDepts() {
 };
 
 function viewAllRoles() {
-    const sql = `SELECT * FROM roles`;
+    const sql = `SELECT * FROM departments
+    INNER JOIN roles ON departments.id=dept_id;`;
 
     db.query(sql, (err, rows) => {
         if(err) {
@@ -193,7 +174,7 @@ function viewAllRoles() {
 }
 
 function addDept() {
-    inquirer.prompt(deptQ).then(answer => {
+    inquirer.prompt(deptQ).then((answer) => {
         const sql = `INSERT INTO departments (dept)
         VALUES (?)`;
 
@@ -209,29 +190,60 @@ function addDept() {
 
 function addRole() {
     const deptArr = [];
-    db.query(`SELECT dept FROM departments`, (err, rows) => {
-        rows.map((dept) => deptArr.push(dept.dept));
-        console.log(deptArr);
-        return deptArr;
-    })
+    db.query(`SELECT dept FROM departments`, (err, results) => {
+        if(err) throw err;
+        results.map((dept) => {
+            deptArr.push(dept.dept)
+        });
+    });
+    inquirer
+        .prompt([
+        {
+            type: "input",
+            name: "role",
+            message: "What is the job title?",
+        },
+        {
+            type: "list",
+            name: "roleDept",
+            message: "What department does this role belong to?",
+            choices: deptArr,
+        },
+        {
+            type: "input",
+            name: "salary",
+            message: "What is the salary for this role?",
+        },
+        ])
+        .then((answers) => {
+            db.query("SELECT id, dept FROM departments", (err, rows) => {
+                const depts = rows.map((row) => {
+                  return { value: row.id, dept: row.dept };
+                });
+                console.log(depts);
+                depts.forEach(element => {
+                    if(answers.roleDept === element.dept) {
+                        const dept_id = element.value;
+                        console.log(dept_id);
 
-    console.log(deptArr);
-    inquirer.prompt(roleQ(deptArr))
-}
-//     (({job_title, salary, dept_id}) => {
-//             const sql = `INSERT INTO roles (job_title, salary, dept_id)
-//             VALUES (?,?,?)`;
-//             const params = [answers.job_title, answers.salary, answers.dept_id]
+                        const sql = `INSERT INTO roles (job_title, salary, dept_id)
+                        VALUES (?,?,?)`;
+                        const params = [answers.role, answers.salary, dept_id]
 
-//             db.query(sql, params, (err, rows) => {
-//                 if(err) {
-//                     console.log('DATABASE ERROR');
-//                     return;
-//                 }
-//                 console.log('Added ' + answer.job_title + ' to the database.');
-//             });
-//         });
-//     }
+                        db.query(sql, params, (err, rows) => {
+                            if(err) {
+                                console.log('DATABASE ERROR');
+                                return;
+                            }
+                            console.log('Added ' + answers.role + ' to the database.');
+                        });
+                    }
+                });
+            });
+        })
+};
+
+
 
 // function addEmp() {
 //     db.query(`SELECT job_title FROM roles`, (err, rows) => {
