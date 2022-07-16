@@ -145,6 +145,7 @@ function viewAllEmployees() {
             return;
         }
         console.table(rows);
+        promptUser();
     });
 };
 
@@ -157,6 +158,7 @@ function viewAllDepts() {
             return;
         }
         console.table(rows);
+        promptUser();
     });
 };
 
@@ -170,6 +172,7 @@ function viewAllRoles() {
             return;
         }
         console.table(rows);
+        promptUser();
     });
 }
 
@@ -184,6 +187,8 @@ function addDept() {
                 return;
             }
             console.log('Added ' + answer.dept + ' to the database.');
+            viewAllDepts();
+            promptUser();
         });
     });
 };
@@ -236,6 +241,8 @@ function addRole() {
                                 return;
                             }
                             console.log('Added ' + answers.role + ' to the database.');
+                            viewAllRoles();
+                            promptUser();
                         });
                     }
                 });
