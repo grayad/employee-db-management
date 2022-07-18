@@ -190,26 +190,28 @@ function addRole() {
                   return { value: row.id, dept: row.dept };
                 });
 
+                // placeholder global variable to change on user input
+                var dept_id = 0;
+
                 // compare user answer to dept data to get dept_id
                 depts.forEach(element => {
                     if(answers.roleDept === element.dept) {
-                        const dept_id = element.value;
-
-
-                        const sql = `INSERT INTO roles (job_title, salary, dept_id)
-                        VALUES (?,?,?)`;
-                        const params = [answers.role, answers.salary, dept_id]
-
-                        db.query(sql, params, (err, rows) => {
-                            if(err) {
-                                console.log('DATABASE ERROR');
-                                return;
-                            }
-                            console.log('Added ' + answers.role + ' to the database.');
-                            viewAllRoles();
-                            promptUser();
-                        });
+                        dept_id = element.value;
                     }
+                });
+
+                const sql = `INSERT INTO roles (job_title, salary, dept_id)
+                VALUES (?,?,?)`;
+                const params = [answers.role, answers.salary, dept_id]
+
+                db.query(sql, params, (err, rows) => {
+                    if(err) {
+                        console.log('DATABASE ERROR');
+                        return;
+                    }
+                    console.log('Added ' + answers.role + ' to the database.');
+                    viewAllRoles();
+                    promptUser();
                 });
             });
         })
@@ -306,7 +308,7 @@ function updateEmp() {
     db.query(`SELECT job_title FROM roles`, (err, results) => {
         if(err) throw err;
         results.map((role) => {
-            roleArr.push(role.job_title)
+            roleArr.push(role.job_title);
         });
     });
     const employeeArr = [];
@@ -320,8 +322,7 @@ function updateEmp() {
     // placeholder global variables to change on user input
     var role_id = 0;
     var employee_id = 0;
-    console.log(employeeArr);
-    console.log(roleArr);
+
     inquirer
         .prompt([
             {
