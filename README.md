@@ -9,3 +9,8 @@ A command-line application that manages a company's employee database with user 
 - MySQL
 - JavaScript
 
+## Walk-through
+https://drive.google.com/file/d/1_zodTEAhoyi6ZjrAgZAqpPI-elYNU3ae/view
+
+
+
